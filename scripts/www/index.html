@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>锐视丽产品查询系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0a1929 0%, #1a3a5c 50%, #0d2137 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* 顶部标题栏 */
+        header {
+            text-align: center;
+            padding: 25px 0;
+            border-bottom: 2px solid #2a5a8a;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        header h1 {
+            font-size: 42px;
+            color: #4fc3f7;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(79, 195, 247, 0.5);
+        }
+        header p {
+            font-size: 20px;
+            margin-top: 8px;
+            color: #8ab4d8;
+            letter-spacing: 2px;
+        }
+        .logo-badge {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 28px;
+            font-weight: bold;
+            color: #29b6f6;
+            border: 3px solid #29b6f6;
+            padding: 8px 18px;
+            border-radius: 8px;
+        }
+        /* 页面切换 */
+        .page {
+            display: none;
+            flex: 1;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 首页大按钮 */
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 50px 0;
+        }
+        .category-card {
+            background: linear-gradient(145deg, #15324d, #1e4a6e);
+            border: 3px solid #2a6aa0;
+            border-radius: 20px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(79, 195, 247, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        .category-card:hover::before {
+            opacity: 1;
+            animation: shine 0.8s ease;
+        }
+        @keyframes shine {
+            from { transform: translateX(-100%) rotate(45deg); }
+            to { transform: translateX(100%) rotate(45deg); }
+        }
+        .category-card:hover {
+            transform: translateY(-8px);
+            border-color: #4fc3f7;
+            box-shadow: 0 15px 40px rgba(79, 195, 247, 0.3);
+        }
+        .category-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+        .category-card h2 {
+            font-size: 32px;
+            color: #4fc3f7;
+            margin-bottom: 12px;
+        }
+        .category-card p {
+            font-size: 18px;
+            color: #a0c4e0;
+            line-height: 1.6;
+        }
+        .category-card .count {
+            display: inline-block;
+            margin-top: 15px;
+            background: #29b6f6;
+            color: #0a1929;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        /* 公司简介区 */
+        .company-info {
+            background: rgba(21, 50, 77, 0.6);
+            border-radius: 16px;
+            padding: 30px 40px;
+            margin-top: 30px;
+            border-left: 5px solid #29b6f6;
+        }
+        .company-info h3 {
+            font-size: 24px;
+            color: #4fc3f7;
+            margin-bottom: 15px;
+        }
+        .company-info p {
+            font-size: 17px;
+            line-height: 1.9;
+            color: #c0d8ec;
+        }
+        /* 底部联系 */
+        footer {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid #2a5a8a;
+            text-align: center;
+        }
+        .contact-bar {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+        .contact-item {
+            font-size: 18px;
+            color: #8ab4d8;
+        }
+        .contact-item span {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        /* 返回按钮栏 */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        .back-btn {
+            background: linear-gradient(145deg, #c62828, #e53935);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 22px;
+            padding: 14px 35px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .back-btn:hover {
+            background: linear-gradient(145deg, #e53935, #ef5350);
+            transform: scale(1.05);
+        }
+        .home-btn {
+            background: linear-gradient(145deg, #1565c0, #1976d2);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 22px;
+            padding: 14px 35px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .home-btn:hover {
+            background: linear-gradient(145deg, #1976d2, #2196f3);
+            transform: scale(1.05);
+        }
+        .page-title {
+            font-size: 32px;
+            color: #4fc3f7;
+            margin-left: 20px;
+        }
+        /* 产品列表网格 */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .product-card {
+            background: linear-gradient(145deg, #15324d, #1a3d5c);
+            border: 2px solid #2a5a8a;
+            border-radius: 14px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .product-card:hover {
+            border-color: #4fc3f7;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(79, 195, 247, 0.25);
+        }
+        .product-card .thumb {
+            width: 100%;
+            height: 160px;
+            background: #0a1929;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-card .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-card h3 {
+            font-size: 20px;
+            color: #e0f0fa;
+            margin-bottom: 8px;
+        }
+        .product-card .tag {
+            display: inline-block;
+            background: rgba(41, 182, 246, 0.2);
+            color: #4fc3f7;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        /* 详情页 */
+        .detail-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        .detail-image-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .detail-image-box img {
+            width: 100%;
+            border-radius: 6px;
+            display: block;
+        }
+        .detail-info h2 {
+            font-size: 36px;
+            color: #4fc3f7;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2a5a8a;
+        }
+        .detail-info .desc {
+            font-size: 18px;
+            line-height: 1.9;
+            color: #c0d8ec;
+            margin-bottom: 25px;
+        }
+        .detail-info .meta {
+            background: rgba(21, 50, 77, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-info .meta h4 {
+            font-size: 20px;
+            color: #29b6f6;
+            margin-bottom: 10px;
+        }
+        .detail-info .meta p {
+            font-size: 16px;
+            color: #a0c4e0;
+            line-height: 1.7;
+        }
+        /* 多图切换 */
+        .image-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .image-tab {
+            background: #1a3d5c;
+            border: 2px solid #2a5a8a;
+            color: #8ab4d8;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .image-tab.active {
+            background: #29b6f6;
+            color: #0a1929;
+            border-color: #29b6f6;
+            font-weight: bold;
+        }
+        .image-tab:hover {
+            border-color: #4fc3f7;
+        }
+        /* 公司介绍页 */
+        .about-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        .about-image {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .about-image img {
+            width: 100%;
+            border-radius: 6px;
+        }
+        .about-text h2 {
+            font-size: 34px;
+            color: #4fc3f7;
+            margin-bottom: 20px;
+        }
+        .about-text p {
+            font-size: 18px;
+            line-height: 2;
+            color: #c0d8ec;
+            margin-bottom: 15px;
+        }
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .home-grid { grid-template-columns: 1fr; gap: 25px; }
+            .detail-layout, .about-layout { grid-template-columns: 1fr; }
+            .logo-badge { display: none; }
+        }
+        /* 时间显示 */
+        .clock {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo-badge">锐视丽</div>
+        <h1>RUISHILI 产品查询系统</h1>
+        <p>商用显示一体化解决方案 · 触摸查询终端</p>
+        <div class="clock" id="clock"></div>
+    </header>
+
+    <!-- 首页 -->
+    <div id="page-home" class="page active">
+        <div class="home-grid">
+            <div class="category-card" onclick="goPage('page-normal')">
+                <div class="category-icon">📺</div>
+                <h2>常规商显产品</h2>
+                <p>广告机、触摸一体机、教学会议平板、智慧黑板等标准商用显示设备</p>
+                <span class="count">19 款产品</span>
+            </div>
+            <div class="category-card" onclick="goPage('page-special')">
+                <div class="category-icon">🔧</div>
+                <h2>非标定制产品</h2>
+                <p>拼接屏、透明柜、滑轨屏、党建机、自助终端等定制化显示方案</p>
+                <span class="count">9 款产品</span>
+            </div>
+            <div class="category-card" onclick="goPage('page-solution')">
+                <div class="category-icon">🏥</div>
+                <h2>行业解决方案</h2>
+                <p>排队叫号、医院分诊、智慧病房、自助报告打印等行业整体方案</p>
+                <span class="count">8 套方案</span>
+            </div>
+        </div>
+
+        <div class="company-info">
+            <h3>关于深圳锐视丽科技有限公司</h3>
+            <p>深圳锐视丽科技有限公司，是一家专注于商用显示领域，集研发、生产、销售与服务于一体的技术型企业。公司核心团队深耕商显行业十余年，构建了覆盖全场景的产品矩阵：从防爆电视、数字标牌、智能会议一体机、智慧教育交互屏，到液晶拼接屏、专业会议投屏系统、室内LED小间距显示屏、艺术画框屏等，同时可提供高度定制化的商用显示解决方案，满足政企、教育、医疗、工业、商业连锁等多领域客户的差异化需求。</p>
+        </div>
+
+        <div style="text-align:center; margin-top:25px;">
+            <button class="home-btn" onclick="goPage('page-about')" style="font-size:20px; padding:12px 30px;">📖 查看公司画册介绍</button>
+        </div>
+
+        <footer>
+            <div class="contact-bar">
+                <div class="contact-item">📞 电话：<span>17274888249</span></div>
+                <div class="contact-item">💬 QQ：<span>483254030</span></div>
+                <div class="contact-item">📧 邮箱：<span>483254030@qq.com</span></div>
+            </div>
+            <div class="contact-bar" style="margin-top:10px;">
+                <div class="contact-item">📍 东莞：广东省东莞市寮步镇蟠龙路力盈商务中心6楼</div>
+                <div class="contact-item">📍 深圳：广东省深圳市龙华区大浪街道浪口社区英泰工业路第5栋</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 常规商显产品 -->
+    <div id="page-normal" class="page">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goPage('page-home')">← 返回首页</button>
+            <span class="page-title">常规商显产品</span>
+        </div>
+        <div class="product-grid" id="normal-grid"></div>
+    </div>
+
+    <!-- 非标定制产品 -->
+    <div id="page-special" class="page">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goPage('page-home')">← 返回首页</button>
+            <span class="page-title">非标定制产品</span>
+        </div>
+        <div class="product-grid" id="special-grid"></div>
+    </div>
+
+    <!-- 行业解决方案 -->
+    <div id="page-solution" class="page">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goPage('page-home')">← 返回首页</button>
+            <span class="page-title">行业解决方案</span>
+        </div>
+        <div class="product-grid" id="solution-grid"></div>
+    </div>
+
+    <!-- 产品详情页 -->
+    <div id="page-detail" class="page">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goBack()">← 返回上一级</button>
+            <button class="home-btn" onclick="goPage('page-home')">🏠 返回首页</button>
+            <span class="page-title" id="detail-title">产品详情</span>
+        </div>
+        <div class="detail-layout">
+            <div class="detail-image-box">
+                <img id="detail-img" src="" alt="产品图">
+                <div class="image-tabs" id="detail-tabs"></div>
+            </div>
+            <div class="detail-info">
+                <h2 id="detail-name">产品名称</h2>
+                <div class="desc" id="detail-desc"></div>
+                <div class="meta">
+                    <h4>📋 产品说明</h4>
+                    <p id="detail-meta"></p>
+                </div>
+                <div class="meta">
+                    <h4>📐 可选尺寸</h4>
+                    <p id="detail-size"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公司介绍页 -->
+    <div id="page-about" class="page">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goPage('page-home')">← 返回首页</button>
+            <span class="page-title">公司介绍</span>
+        </div>
+        <div class="about-layout">
+            <div class="about-image">
+                <img src="images/page_02.png" alt="公司介绍">
+            </div>
+            <div class="about-text">
+                <h2>深圳锐视丽科技有限公司</h2>
+                <p>深圳锐视丽科技有限公司，是一家专注于商用显示领域，集研发、生产、销售与服务于一体的技术型企业。</p>
+                <p>公司核心团队深耕商显行业十余年，凭借深厚的技术积累与行业洞察，构建了覆盖全场景的产品矩阵：从防爆电视、数字标牌、智能会议一体机、智慧教育交互屏，到液晶拼接屏、专业会议投屏系统、室内LED小间距显示屏、艺术画框屏等。</p>
+                <p>同时可提供高度定制化的商用显示解决方案，满足政企、教育、医疗、工业、商业连锁等多领域客户的差异化需求。</p>
+                <p>锐视丽以"极致视觉体验，赋能行业智慧显示"为理念，持续投入技术创新，严格把控产品品质，致力于为客户提供稳定可靠、高效智能的商用显示产品与一站式服务，助力客户实现数字化、可视化的业务升级。</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 产品数据
+    const products = {
+        normal: [
+            { id:'ad-wall', name:'壁挂液晶广告机', pages:['page_04.png'], desc:'工业级外观设计，侧入式ELED背光，铝板散热，全金属结构，超薄四等边边框最薄处仅18mm，支持横竖屏自由切换。', size:'15.6 / 21.5 / 32 / 43 / 50 / 55 / 65 / 75 / 85 / 100 / 110 英寸' },
+            { id:'ad-stand', name:'立式液晶广告机', pages:['page_05.png'], desc:'超薄超轻设计，高分辨率高对比度，表面钢化玻璃防护，8bit-16.7M色彩，7×24小时不间断工作可达5-6万小时。', size:'32 / 43 / 50 / 55 / 65 / 75 / 85 / 86 / 98 / 100 英寸' },
+            { id:'touch-wall', name:'壁挂触摸一体机', pages:['page_06.png'], desc:'工业级外观，侧入式ELED背光，铝板散热，钣金结构，红外/电容触摸可选，支持安卓、Windows双系统。', size:'21.5 / 32 / 43 / 50 / 55 / 65 / 75 / 85 / 86 / 98 / 100 / 110 英寸' },
+            { id:'touch-horizontal', name:'卧式触摸一体机', pages:['page_07.png'], desc:'斜面卧式造型，适合查询大厅，铝板散热，坚固钣金外壳，红外/电容触摸，支持Windows/安卓系统。', size:'21.5 / 32 / 43 / 50 / 55 / 65 / 75 / 85 / 86 / 98 / 110 英寸' },
+            { id:'elevator', name:'电梯广告机', pages:['page_08.png'], desc:'超薄超轻设计，高分辨率高对比度，钢化玻璃防护防盗锁，横屏竖屏两种款式，支持定时开关机实现24h无人监管。', size:'15.6 / 21.5 / 32 / 43 / 50 / 55 英寸' },
+            { id:'touch-vertical', name:'立式触摸一体机', pages:['page_09.png'], desc:'超薄超轻设计，工业级液晶面板全新A规面板，8bit-16.7M色彩，7×24小时不间断工作，红外/电容触摸可选。', size:'32 / 43 / 49 / 55 / 65 / 75 / 85 / 86 / 98 / 100 英寸' },
+            { id:'classcard', name:'电子班牌一体机', pages:['page_10.png'], desc:'集信息整合、采集、传输、发布于一体的多媒体信息发布系统，打通学校、教师、学生、家长多端信息互通。', size:'21.5 / 32 英寸' },
+            { id:'monitor', name:'液晶监视器', pages:['page_11.png'], desc:'高分辨率高亮度高对比度，自动识别PAL/NTSC，H2S宽动态技术，支持多种信号接口，7×24小时不间断运行大于60000小时。', size:'15 / 17 / 19 / 21.5 / 22 / 24 / 27 / 32 / 43 / 46 / 50 / 55 / 60 / 65 / 70 / 75 / 86 / 100 / 110 英寸' },
+            { id:'horizontal-all', name:'卧式一体机', pages:['page_12.png'], desc:'工业级外观设计，ELED/DLED背光，钣金结构，斜面角度和边角圆弧设计，高透全钢化防爆玻璃，红外/电容触摸可选。', size:'32 / 43 / 55 / 65 / 75 / 86 英寸' },
+            { id:'query-kiosk', name:'触摸查询一体机', pages:['page_13.png'], desc:'豪华冷扎钢板五层金属烤漆，立体功放内磁式音箱，原装工业LCD液晶屏，电容/红外触摸屏，可加装摄像头、键盘等外设。', size:'19 / 21.5 / 32 英寸' },
+            { id:'teaching-a', name:'触控教学一体机(A系列)', pages:['page_14.png','page_15.png'], desc:'触控电子白板教学一体机，DLED背光直下式，4K超清3840*2160，红外二十点触摸感应，3.2MM零贴合双面AG防眩光莫氏7级防爆玻璃。', size:'55 / 65 / 70 / 75 / 85 / 86 / 98 / 100 英寸' },
+            { id:'teaching-smart', name:'智慧教育双系统教学机', pages:['page_16.png','page_17.png'], desc:'替代传统电动幕布加投影机，电脑、电视、电子白板、投影、音响一体化设计，3840*2160分辨率4K显示，十点触摸，智能护眼。', size:'65 / 75 / 85 / 86 / 98 英寸' },
+            { id:'meeting', name:'会议智能触摸一体机', pages:['page_18.png','page_19.png'], desc:'集电脑、投影仪、电视、电子白板、广告机为一体，支持无线投屏、远程会议、文档批注，轻松驾驭各种应用会议场景。', size:'55 / 65 / 75 / 86 / 98 / 100 英寸' },
+            { id:'blackboard', name:'智慧黑板', pages:['page_20.png','page_21.png'], desc:'传统黑板与智能高清互动显示无缝结合，全贴合5.0技术电容触控光钢化玻璃，双系统一键切换，粉笔书写+多媒体触控。', size:'65 / 70 / 75 / 85 / 86 / 98 / 100 英寸' },
+            { id:'water-brand', name:'电子水牌广告机', pages:['page_22.png'], desc:'超薄超窄设计，一次压模成型轻薄坚固，折叠易搬可移动，多角度摆放最小0°垂直最大45°展开，智能去噪点不闪屏。', size:'43 / 50 / 55 / 65 / 75 / 85 / 86 / 98 / 100 英寸' },
+            { id:'semi-outdoor', name:'半户外高亮屏', pages:['page_23.png'], desc:'3500nit亮度全新品质展示，12.5mm超窄边框54mm超薄厚度，远程控制系统可检查健康状态控制亮度温度风扇，IP5X防尘。', size:'43 / 55 / 65 / 75 / 86 英寸' },
+            { id:'double-side', name:'双面广告机', pages:['page_24.png'], desc:'冷轧钢烤漆工艺高亮白光感喷粉，双屏两面均有屏幕可同步显示，超薄机身仅21mm，支持壁挂吊顶落地多种安装方式。', size:'43 / 50 / 55 英寸' },
+            { id:'picture-frame', name:'画框广告机', pages:['page_25.png'], desc:'阻燃发泡材料抗热胀冷缩，可定制纹路颜色，屏幕防眩光处理技术不反光，多种颜色可选黑胡桃木红木松木，横竖屏两款。', size:'21.5 / 23.8 / 27 / 32 / 43 / 50 / 55 / 65 英寸' },
+            { id:'outdoor', name:'户外立式广告机', pages:['page_26.png','page_27.png'], desc:'5000nits高亮度全天阳光清晰可见，智能灯光控制自动调节，智能温控系统，IP65级防尘防水，五防设计防水防尘防雷防晒防腐。', size:'21.5 / 32 / 43 / 50 / 55 / 65 / 75 / 85 / 86 / 98 / 110 英寸' },
+        ],
+        special: [
+            { id:'lcd-splice', name:'液晶拼接屏', pages:['page_28.png','page_29.png'], desc:'DID工业级面板，55寸超窄边拼缝仅3.5mm，178°超宽视角S-PVSA技术，专业3D图像处理芯片动态降噪，RS232远程控制，断电记忆功能。', size:'46 / 49 / 55 / 65 英寸（可定制任意拼接组合）' },
+            { id:'touch-table', name:'触摸茶几', pages:['page_30.png'], desc:'一台可替代老式茶几餐桌及周边辅助的多媒体娱乐设施，独有光学交互感应成像专利技术实现真多点触摸无鬼点，防水防划抗击打。', size:'32 / 43 / 49 / 55 / 65 英寸' },
+            { id:'transparent', name:'透明屏展示柜', pages:['page_31.png'], desc:'高透光率液晶显示能透过播放画面看到内置物，80°全方位可视角度，触摸无痕迹不产生水波纹，比普通液晶屏更节能电力消耗仅十分之一。', size:'32 / 43 / 50 / 55 / 65 / 75 / 86 / 98 英寸' },
+            { id:'flipbook', name:'电子翻书机', pages:['page_32.png'], desc:'真实实体模型加暗藏计算机控制系统，红外摄像头主机无外露，书内容可定制影片图片皆可藏于书内，一体式LED背光直下式发光。', size:'32 / 43 / 55 / 65 英寸' },
+            { id:'slide-screen', name:'互动滑轨屏', pages:['page_33.png'], desc:'定制滑行轨道和互动橱窗结合，屏幕移动到预定点位自动播放内容并互动，集图片文字视频于一体，分手动自动感应电动四种版本。', size:'19 / 21.5 / 32 / 43 / 50 / 55 / 65 / 75 / 86 / 98 英寸' },
+            { id:'party-ad', name:'党建广告机', pages:['page_34.png'], desc:'红色党建主题外观设计，云端管理手机电脑远程管理，支持手机投屏，自动识别U盘插入自动播放，可自由设置LOGO天气时间滚动字幕。', size:'32 / 43 / 55 / 65 / 75 英寸' },
+            { id:'party-touch', name:'党建触摸一体机', pages:['page_35.png'], desc:'党建主题定制外观，原装高清硬屏1920*1080，178°大视角，多点触控触摸灵敏，自定义查询内容支持自主开发软件，安卓Windows双系统。', size:'32 / 43 / 55 / 65 英寸' },
+            { id:'cabinet-custom', name:'其他机柜定制', pages:['page_36.png'], desc:'豪华冷扎钢板五层金属烤漆可指定颜色，立体功放内磁式音箱，原装工业LCD液晶屏，可加装打印机读卡器投币器扫描仪指纹仪摄像头金属密码小键盘。', size:'19 / 21.5 / 32 / 43 / 49 / 55 / 65 / 75 英寸' },
+            { id:'self-service', name:'自助服务终端', pages:['page_37.png'], desc:'豪华冷扎钢板五层金属烤漆，立体功放内磁式音箱标准网络接口，原装工业LCD液晶屏，可加装打印机读卡器投币器扫描仪指纹仪摄像头等。', size:'19 / 21.5 / 32 / 43 英寸' },
+        ],
+        solution: [
+            { id:'queue-system', name:'排队叫号系统', pages:['page_38.png','page_39.png','page_40.png'], desc:'无线排队机以24小时自助服务为设计理念，缓解营业厅人流量过大问题，包含取号机、呼叫器、评价器、窗口屏、综合屏、LED屏整套方案。', size:'窗口屏：四字/五字/八字/双行八字/十二字；显示屏：19-75英寸' },
+            { id:'door-plate', name:'电子门牌系列', pages:['page_41.png'], desc:'全钢模具制造表面金属烤漆，新型高亮显示屏透光率高还原真实色彩，钢化玻璃耐磨防水防尘防爆防刮，智能诊室屏叫号状态实时显示。', size:'19 / 21.5 / 32 / 43 英寸' },
+            { id:'outpatient-queue', name:'门诊排队叫号系统', pages:['page_42.png'], desc:'应用于医院各门诊科室，有效解决病人就诊排队无序、医生工作量不平衡、就诊环境嘈杂等问题，具有一级二级分诊排队模式。', size:'可对接医院HIS系统，定制化部署' },
+            { id:'pharmacy-queue', name:'药房取药排队叫号系统', pages:['page_43.png'], desc:'应用于医院中药房西药房取药窗口，自动读取患者信息，配药完成后点击呼叫按钮或扫描取药单条码系统自动叫号，支持批量叫号。', size:'可对接医院HIS系统，定制化部署' },
+            { id:'lab-queue', name:'检验化验排队叫号系统', pages:['page_44.png'], desc:'多应用于医院抽血窗口，通过与HIS或LIS系统无缝对接获取患者基本信息，报到后自动进入抽血排队队列，窗口屏幕语音响应并显示患者信息。', size:'可对接HIS/LIS系统，定制化部署' },
+            { id:'report-print', name:'自助报告单打印系统', pages:['page_45.png'], desc:'自助报告打印机支持刷卡或输入就诊卡号查看打印个人报告，自助报告显示液晶一体机滚动显示报告已出人员信息自动更新。', size:'可对接医院LIS系统，定制化部署' },
+            { id:'smart-ward', name:'智慧病房系统', pages:['page_46.png'], desc:'集成医护对讲系统、ICU探视系统、住院病人信息表、电子床头卡等功能，包含病房区信息看板、走廊显示屏、病房门口机、病床分机。', size:'可对接医院系统，定制化部署' },
+            { id:'guide-inspection', name:'导检体验排队叫号系统', pages:['page_47.png'], desc:'病房区信息看板显示工作日志和病区公告信息，走廊显示屏呼叫信息显示护理增援提醒，病房门口机医护人员信息显示呼叫对讲IC门禁，病床分机呼叫对讲费用查询。', size:'可对接医院系统，定制化部署' },
+        ]
+    };
+
+    let lastPage = 'page-home';
+    let currentCategory = '';
+
+    // 渲染产品列表
+    function renderProducts(category, containerId) {
+        const grid = document.getElementById(containerId);
+        grid.innerHTML = products[category].map(p => `
+            <div class="product-card" onclick="showDetail('${category}','${p.id}')">
+                <div class="thumb"><img src="images/${p.pages[0]}" alt="${p.name}"></div>
+                <h3>${p.name}</h3>
+                <span class="tag">${p.pages.length > 1 ? p.pages.length + '页画册' : '查看详情'}</span>
+            </div>
+        `).join('');
+    }
+
+    // 页面切换
+    function goPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const current = document.querySelector('.page.active');
+        if (current) lastPage = current.id;
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function goBack() {
+        goPage(lastPage);
+    }
+
+    // 显示产品详情
+    function showDetail(category, id) {
+        currentCategory = category;
+        const p = products[category].find(x => x.id === id);
+        if (!p) return;
+
+        lastPage = 'page-' + category;
+        document.getElementById('detail-title').textContent = p.name;
+        document.getElementById('detail-name').textContent = p.name;
+        document.getElementById('detail-desc').textContent = p.desc;
+        document.getElementById('detail-meta').textContent = '本产品详细参数、功能特点、应用案例请查看左侧画册原图，支持多页切换浏览。所有产品均可根据客户需求定制外观颜色、功能配置。';
+        document.getElementById('detail-size').textContent = p.size;
+
+        // 图片
+        document.getElementById('detail-img').src = 'images/' + p.pages[0];
+
+        // 多图标签
+        const tabs = document.getElementById('detail-tabs');
+        if (p.pages.length > 1) {
+            tabs.innerHTML = p.pages.map((pg, i) =>
+                `<button class="image-tab ${i===0?'active':''}" onclick="switchImg('${pg}', this)">第${i+1}页</button>`
+            ).join('');
+        } else {
+            tabs.innerHTML = '';
+        }
+
+        goPage('page-detail');
+    }
+
+    function switchImg(pg, btn) {
+        document.getElementById('detail-img').src = 'images/' + pg;
+        document.querySelectorAll('.image-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    // 时钟
+    function updateClock() {
+        const now = new Date();
+        const str = now.getFullYear() + '-' +
+            String(now.getMonth()+1).padStart(2,'0') + '-' +
+            String(now.getDate()).padStart(2,'0') + ' ' +
+            String(now.getHours()).padStart(2,'0') + ':' +
+            String(now.getMinutes()).padStart(2,'0') + ':' +
+            String(now.getSeconds()).padStart(2,'0');
+        document.getElementById('clock').textContent = str;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 初始化
+    renderProducts('normal', 'normal-grid');
+    renderProducts('special', 'special-grid');
+    renderProducts('solution', 'solution-grid');
+</script>
+</body>
+</html>
